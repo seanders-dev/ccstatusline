@@ -6,6 +6,7 @@ import type {
     WidgetEditorDisplay,
     WidgetItem
 } from '../types/Widget';
+import { loadClaudeSettingsSync } from '../utils/claude-settings';
 import { getContextWindowMetrics } from '../utils/context-window';
 import {
     getContextConfig,
@@ -14,6 +15,20 @@ import {
 import { makeUsageProgressBar } from '../utils/usage';
 
 import { makeSliderBar } from './shared/usage-display';
+
+const AUTO_COMPACT_THRESHOLD = 0.85;
+
+function remapPercent(clampedPercent: number): number {
+    try {
+        const settings = loadClaudeSettingsSync({ logErrors: false });
+        if (settings.autoCompactEnabled !== false) {
+            return Math.min(100, clampedPercent / AUTO_COMPACT_THRESHOLD);
+        }
+    } catch {
+        // fall through to no remapping
+    }
+    return clampedPercent;
+}
 
 type DisplayMode = 'progress' | 'progress-short' | 'slider' | 'slider-only';
 
@@ -110,16 +125,17 @@ export class ContextBarWidget implements Widget {
 
         const percent = (used / total) * 100;
         const clampedPercent = Math.max(0, Math.min(100, percent));
+        const remappedPercent = remapPercent(clampedPercent);
         const totalK = Math.round(total / 1000);
 
         if (isBarSliderMode(displayMode)) {
-            const slider = makeSliderBar(clampedPercent);
-            const sliderDisplay = displayMode === 'slider' ? `${slider} ${totalK}k (${Math.round(clampedPercent)}%)` : slider;
+            const slider = makeSliderBar(remappedPercent);
+            const sliderDisplay = displayMode === 'slider' ? `${slider} ${totalK}k (${Math.round(remappedPercent)}%)` : slider;
             return item.rawValue ? sliderDisplay : `Context: ${sliderDisplay}`;
         }
 
         const barWidth = displayMode === 'progress' ? 32 : 16;
-        const display = `${makeUsageProgressBar(clampedPercent, barWidth)} ${totalK}k (${Math.round(clampedPercent)}%)`;
+        const display = `${makeUsageProgressBar(remappedPercent, barWidth)} ${totalK}k (${Math.round(remappedPercent)}%)`;
 
         return item.rawValue ? display : `Context: ${display}`;
     }
@@ -137,7 +153,8 @@ export class ContextBarWidget implements Widget {
         if (used === null || total === null || total <= 0) {
             return null;
         }
-        const percent = Math.max(0, Math.min(100, (used / total) * 100));
+        const rawPercent = Math.max(0, Math.min(100, (used / total) * 100));
+        const percent = remapPercent(rawPercent);
         if (percent >= 90) {
             return 'red';
         }
