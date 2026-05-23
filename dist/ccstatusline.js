@@ -67289,11 +67289,11 @@ class ContextBarWidget {
     if (context.isPreview) {
       if (isBarSliderMode(displayMode)) {
         const slider = makeSliderBar(25);
-        const sliderDisplay = displayMode === "slider" ? `${slider} 50k/200k (25%)` : slider;
+        const sliderDisplay = displayMode === "slider" ? `${slider} 200k (25%)` : slider;
         return item.rawValue ? sliderDisplay : `Context: ${sliderDisplay}`;
       }
       const barWidth2 = displayMode === "progress" ? 32 : 16;
-      const previewDisplay = `${makeUsageProgressBar(25, barWidth2)} 50k/200k (25%)`;
+      const previewDisplay = `${makeUsageProgressBar(25, barWidth2)} 200k (25%)`;
       return item.rawValue ? previewDisplay : `Context: ${previewDisplay}`;
     }
     const contextWindowMetrics = getContextWindowMetrics(context.data);
@@ -67311,15 +67311,14 @@ class ContextBarWidget {
     }
     const percent = used / total * 100;
     const clampedPercent = Math.max(0, Math.min(100, percent));
-    const usedK = Math.round(used / 1000);
     const totalK = Math.round(total / 1000);
     if (isBarSliderMode(displayMode)) {
       const slider = makeSliderBar(clampedPercent);
-      const sliderDisplay = displayMode === "slider" ? `${slider} ${usedK}k/${totalK}k (${Math.round(clampedPercent)}%)` : slider;
+      const sliderDisplay = displayMode === "slider" ? `${slider} ${totalK}k (${Math.round(clampedPercent)}%)` : slider;
       return item.rawValue ? sliderDisplay : `Context: ${sliderDisplay}`;
     }
     const barWidth = displayMode === "progress" ? 32 : 16;
-    const display = `${makeUsageProgressBar(clampedPercent, barWidth)} ${usedK}k/${totalK}k (${Math.round(clampedPercent)}%)`;
+    const display = `${makeUsageProgressBar(clampedPercent, barWidth)} ${totalK}k (${Math.round(clampedPercent)}%)`;
     return item.rawValue ? display : `Context: ${display}`;
   }
   getDynamicColor(item, context) {

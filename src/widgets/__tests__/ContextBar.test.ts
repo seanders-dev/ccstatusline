@@ -39,7 +39,7 @@ describe('ContextBarWidget', () => {
         };
         const widget = new ContextBarWidget();
 
-        expect(widget.render({ id: 'ctx', type: 'context-bar' }, context, DEFAULT_SETTINGS)).toBe('Context: [bar:15.0:16] 30k/200k (15%)');
+        expect(widget.render({ id: 'ctx', type: 'context-bar' }, context, DEFAULT_SETTINGS)).toBe('Context: [bar:15.0:16] 200k (15%)');
     });
 
     it('falls back to token metrics and model context size', () => {
@@ -55,7 +55,7 @@ describe('ContextBarWidget', () => {
         };
         const widget = new ContextBarWidget();
 
-        expect(widget.render({ id: 'ctx', type: 'context-bar' }, context, DEFAULT_SETTINGS)).toBe('Context: [bar:25.0:16] 50k/200k (25%)');
+        expect(widget.render({ id: 'ctx', type: 'context-bar' }, context, DEFAULT_SETTINGS)).toBe('Context: [bar:25.0:16] 200k (25%)');
     });
 
     it('uses 1M context label model IDs in fallback mode', () => {
@@ -71,7 +71,7 @@ describe('ContextBarWidget', () => {
         };
         const widget = new ContextBarWidget();
 
-        expect(widget.render({ id: 'ctx', type: 'context-bar' }, context, DEFAULT_SETTINGS)).toBe('Context: [bar:5.0:16] 50k/1000k (5%)');
+        expect(widget.render({ id: 'ctx', type: 'context-bar' }, context, DEFAULT_SETTINGS)).toBe('Context: [bar:5.0:16] 1000k (5%)');
     });
 
     it('uses 1M in parentheses model IDs in fallback mode', () => {
@@ -87,7 +87,7 @@ describe('ContextBarWidget', () => {
         };
         const widget = new ContextBarWidget();
 
-        expect(widget.render({ id: 'ctx', type: 'context-bar' }, context, DEFAULT_SETTINGS)).toBe('Context: [bar:5.0:16] 50k/1000k (5%)');
+        expect(widget.render({ id: 'ctx', type: 'context-bar' }, context, DEFAULT_SETTINGS)).toBe('Context: [bar:5.0:16] 1000k (5%)');
     });
 
     it('clamps usage percentage to 100 when context length exceeds total', () => {
@@ -106,7 +106,7 @@ describe('ContextBarWidget', () => {
         };
         const widget = new ContextBarWidget();
 
-        expect(widget.render({ id: 'ctx', type: 'context-bar' }, context, DEFAULT_SETTINGS)).toBe('Context: [bar:100.0:16] 250k/200k (100%)');
+        expect(widget.render({ id: 'ctx', type: 'context-bar' }, context, DEFAULT_SETTINGS)).toBe('Context: [bar:100.0:16] 200k (100%)');
     });
 
     it('supports raw mode without context label', () => {
@@ -125,7 +125,7 @@ describe('ContextBarWidget', () => {
         };
         const widget = new ContextBarWidget();
 
-        expect(widget.render({ id: 'ctx', type: 'context-bar', rawValue: true }, context, DEFAULT_SETTINGS)).toBe('[bar:2.5:16] 5k/200k (3%)');
+        expect(widget.render({ id: 'ctx', type: 'context-bar', rawValue: true }, context, DEFAULT_SETTINGS)).toBe('[bar:2.5:16] 200k (3%)');
     });
 
     it('renders long progress bar mode when configured', () => {
@@ -148,7 +148,7 @@ describe('ContextBarWidget', () => {
             id: 'ctx',
             type: 'context-bar',
             metadata: { display: 'progress' }
-        }, context, DEFAULT_SETTINGS)).toBe('Context: [bar:15.0:32] 30k/200k (15%)');
+        }, context, DEFAULT_SETTINGS)).toBe('Context: [bar:15.0:32] 200k (15%)');
     });
 
     it('cycles display modes in the expected order', () => {
