@@ -71,8 +71,8 @@ describe('WeeklyUsageWidget', () => {
         expectedModifierText: '(long bar, inverted)',
         expectedProgress: 'Weekly: [███████████████████░░░░░░░░░░░░░] 57.9%',
         expectedRawProgress: '[███████░░░░░░░░░] 42.1%',
-        expectedRawTime: '42.1%',
-        expectedTime: 'Weekly: 42.1%',
+        expectedRawTime: '42%',
+        expectedTime: 'Weekly: 42%',
         modifierItem: {
             id: 'weekly',
             type: 'weekly-usage',

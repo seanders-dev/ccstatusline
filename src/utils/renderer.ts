@@ -189,7 +189,8 @@ function renderPowerlineStatusLine(
             const paddedText = `${leadingPadding}${widgetText}${trailingPadding}`;
 
             // Determine colors
-            let fgColor = widget.color ?? defaultColor;
+            const dynamicColor = widgetImpl?.getDynamicColor?.(widget, context) ?? null;
+            let fgColor = dynamicColor ?? widget.color ?? defaultColor;
             let bgColor = widget.backgroundColor;
 
             // Apply theme colors if a theme is set (and not 'custom')
@@ -725,13 +726,13 @@ export function renderStatusLine(
         try {
             let widgetText: string | undefined;
             let defaultColor = 'white';
+            const widgetImpl = getWidget(widget.type);
 
             // Use pre-rendered content
             const preRendered = preRenderedWidgets[i];
             if (preRendered?.content) {
                 widgetText = preRendered.content;
                 // Get default color from widget impl for consistency
-                const widgetImpl = getWidget(widget.type);
                 if (widgetImpl) {
                     defaultColor = widgetImpl.getDefaultColor();
                 }
@@ -752,8 +753,10 @@ export function renderStatusLine(
                     elements.push({ content: finalOutput, type: widget.type, widget });
                 } else {
                     // Normal widget rendering with colors
+                    const dynamicColor = widgetImpl?.getDynamicColor?.(widget, context) ?? null;
+                    const effectiveColor = dynamicColor ?? widget.color ?? defaultColor;
                     elements.push({
-                        content: applyColorsWithOverride(widgetText, widget.color ?? defaultColor, widget.backgroundColor, widget.bold),
+                        content: applyColorsWithOverride(widgetText, effectiveColor, widget.backgroundColor, widget.bold),
                         type: widget.type,
                         widget
                     });

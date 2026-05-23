@@ -114,7 +114,22 @@ export class WeeklyUsageWidget implements Widget {
             return formatRawOrLabeledValue(item, 'Weekly: ', sliderDisplay);
         }
 
-        return formatRawOrLabeledValue(item, 'Weekly: ', `${percent.toFixed(1)}%`);
+        return formatRawOrLabeledValue(item, 'Weekly: ', `${Math.round(percent)}%`);
+    }
+
+    getDynamicColor(item: WidgetItem, context: RenderContext): string | null {
+        const usage = context.usageData?.weeklyUsage;
+        if (usage === undefined) {
+            return null;
+        }
+        const percent = Math.max(0, Math.min(100, usage));
+        if (percent >= 90) {
+            return 'red';
+        }
+        if (percent >= 70) {
+            return 'yellow';
+        }
+        return 'green';
     }
 
     getCustomKeybinds(item?: WidgetItem): CustomKeybind[] {

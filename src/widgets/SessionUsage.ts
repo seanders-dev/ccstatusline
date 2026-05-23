@@ -114,7 +114,22 @@ export class SessionUsageWidget implements Widget {
             return formatRawOrLabeledValue(item, 'Session: ', sliderDisplay);
         }
 
-        return formatRawOrLabeledValue(item, 'Session: ', `${percent.toFixed(1)}%`);
+        return formatRawOrLabeledValue(item, 'Session: ', `${Math.round(percent)}%`);
+    }
+
+    getDynamicColor(item: WidgetItem, context: RenderContext): string | null {
+        const usage = context.usageData?.sessionUsage;
+        if (usage === undefined) {
+            return null;
+        }
+        const percent = Math.max(0, Math.min(100, usage));
+        if (percent >= 90) {
+            return 'red';
+        }
+        if (percent >= 70) {
+            return 'yellow';
+        }
+        return 'green';
     }
 
     getCustomKeybinds(item?: WidgetItem): CustomKeybind[] {

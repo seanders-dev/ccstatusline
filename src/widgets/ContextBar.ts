@@ -125,6 +125,29 @@ export class ContextBarWidget implements Widget {
         return item.rawValue ? display : `Context: ${display}`;
     }
 
+    getDynamicColor(item: WidgetItem, context: RenderContext): string | null {
+        const metrics = getContextWindowMetrics(context.data);
+        let total = metrics.windowSize;
+        let used = metrics.contextLengthTokens;
+        if (used === null && context.tokenMetrics) {
+            used = context.tokenMetrics.contextLength;
+        }
+        if (total === null && context.tokenMetrics) {
+            total = getContextConfig(getModelContextIdentifier(context.data?.model)).maxTokens;
+        }
+        if (used === null || total === null || total <= 0) {
+            return null;
+        }
+        const percent = Math.max(0, Math.min(100, (used / total) * 100));
+        if (percent >= 90) {
+            return 'red';
+        }
+        if (percent >= 70) {
+            return 'yellow';
+        }
+        return 'green';
+    }
+
     getCustomKeybinds(): CustomKeybind[] {
         return [
             { key: 'p', label: '(p)rogress toggle', action: 'toggle-progress' }

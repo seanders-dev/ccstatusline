@@ -71,8 +71,8 @@ describe('SessionUsageWidget', () => {
         expectedModifierText: '(medium bar, inverted)',
         expectedProgress: 'Session: [████████████░░░░] 76.5%',
         expectedRawProgress: '[████████░░░░░░░░░░░░░░░░░░░░░░░░] 23.4%',
-        expectedRawTime: '23.4%',
-        expectedTime: 'Session: 23.4%',
+        expectedRawTime: '23%',
+        expectedTime: 'Session: 23%',
         modifierItem: {
             id: 'session',
             type: 'session-usage',
