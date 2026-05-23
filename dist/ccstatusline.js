@@ -67848,10 +67848,14 @@ May be incorrect when multiple Claude Code sessions are running due to current C
   }
   render(item, context, settings) {
     if (context.isPreview) {
-      return item.rawValue ? "high" : "Thinking: high";
+      return item.rawValue ? "high *" : "Thinking: high *";
     }
-    const effort = formatEffort(resolveThinkingEffort(context));
-    return item.rawValue ? effort : `Thinking: ${effort}`;
+    const resolved = resolveThinkingEffort(context);
+    if (!resolved) {
+      return null;
+    }
+    const effort = formatEffort(resolved);
+    return item.rawValue ? `${effort} *` : `Thinking: ${effort} *`;
   }
   getDynamicColor(item, context) {
     const resolved = resolveThinkingEffort(context);

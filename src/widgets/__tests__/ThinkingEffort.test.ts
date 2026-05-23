@@ -126,19 +126,19 @@ describe('ThinkingEffortWidget', () => {
     describe('preview mode', () => {
         it('returns labelled preview', () => {
             const result = render({ isPreview: true });
-            expect(result).toBe('Thinking: high');
+            expect(result).toBe('Thinking: high *');
         });
 
         it('returns raw preview', () => {
             const result = render({ isPreview: true, rawValue: true });
-            expect(result).toBe('high');
+            expect(result).toBe('high *');
         });
     });
 
     describe('status JSON source', () => {
         it('reads max effort from status JSON', () => {
             const result = render({ statusData: { effort: { level: 'max' } } });
-            expect(result).toBe('Thinking: max');
+            expect(result).toBe('Thinking: max *');
         });
 
         it('returns raw status JSON effort when requested', () => {
@@ -146,7 +146,7 @@ describe('ThinkingEffortWidget', () => {
                 rawValue: true,
                 statusData: { effort: { level: 'max' } }
             });
-            expect(result).toBe('max');
+            expect(result).toBe('max *');
         });
 
         it('prefers status JSON effort over transcript and settings fallbacks', () => {
@@ -155,17 +155,17 @@ describe('ThinkingEffortWidget', () => {
                 settingsValue: { effortLevel: 'low' },
                 statusData: { effort: { level: 'max' } }
             });
-            expect(result).toBe('Thinking: max');
+            expect(result).toBe('Thinking: max *');
         });
 
         it('supports xhigh effort from status JSON', () => {
             const result = render({ statusData: { effort: { level: 'xhigh' } } });
-            expect(result).toBe('Thinking: xhigh');
+            expect(result).toBe('Thinking: xhigh *');
         });
 
         it('shows unknown-but-valid status JSON effort with trailing "?" marker', () => {
             const result = render({ statusData: { effort: { level: 'ultra' } } });
-            expect(result).toBe('Thinking: ultra?');
+            expect(result).toBe('Thinking: ultra? *');
         });
 
         it('treats null status JSON effort as explicit default', () => {
@@ -174,7 +174,7 @@ describe('ThinkingEffortWidget', () => {
                 settingsValue: { effortLevel: 'low' },
                 statusData: { effort: { level: null } }
             });
-            expect(result).toBe('Thinking: default');
+            expect(result).toBeNull();
         });
     });
 
@@ -184,7 +184,7 @@ describe('ThinkingEffortWidget', () => {
                 fileContent: makeTranscriptEntry(MODEL_WITH_HIGH_EFFORT),
                 settingsValue: { effortLevel: 'low' }
             });
-            expect(result).toBe('Thinking: high');
+            expect(result).toBe('Thinking: high *');
         });
 
         it('returns raw transcript effort when requested', () => {
@@ -192,32 +192,32 @@ describe('ThinkingEffortWidget', () => {
                 fileContent: makeTranscriptEntry(MODEL_WITH_LOW_EFFORT),
                 rawValue: true
             });
-            expect(result).toBe('low');
+            expect(result).toBe('low *');
         });
 
         it('supports max effort from transcript output', () => {
             const result = render({ fileContent: makeTranscriptEntry(MODEL_WITH_MAX_EFFORT) });
-            expect(result).toBe('Thinking: max');
+            expect(result).toBe('Thinking: max *');
         });
 
         it('supports xhigh effort from transcript output', () => {
             const result = render({ fileContent: makeTranscriptEntry(MODEL_WITH_XHIGH_EFFORT) });
-            expect(result).toBe('Thinking: xhigh');
+            expect(result).toBe('Thinking: xhigh *');
         });
 
         it('supports mixed-case xHigh effort from transcript output', () => {
             const result = render({ fileContent: makeTranscriptEntry(MODEL_WITH_XHIGH_MIXED_CASE_EFFORT) });
-            expect(result).toBe('Thinking: xhigh');
+            expect(result).toBe('Thinking: xhigh *');
         });
 
         it('shows unknown-but-valid effort with trailing "?" marker', () => {
             const result = render({ fileContent: makeTranscriptEntry(MODEL_WITH_SUPER_MAX_EFFORT) });
-            expect(result).toBe('Thinking: super-max?');
+            expect(result).toBe('Thinking: super-max? *');
         });
 
         it('lowercases and marks mixed-case unknown effort', () => {
             const result = render({ fileContent: makeTranscriptEntry(MODEL_WITH_SUPER_MAX_MIXED_CASE_EFFORT) });
-            expect(result).toBe('Thinking: super-max?');
+            expect(result).toBe('Thinking: super-max? *');
         });
 
         it('does not keep stale transcript effort when a newer /model output has no effort', () => {
@@ -229,34 +229,34 @@ describe('ThinkingEffortWidget', () => {
                 ].join('\n'),
                 settingsValue: { effortLevel: 'medium' }
             });
-            expect(result).toBe('Thinking: medium');
+            expect(result).toBe('Thinking: medium *');
         });
     });
 
     describe('/effort command source', () => {
         it('reads effort from /effort transcript stdout', () => {
             const result = render({ fileContent: makeTranscriptEntry(EFFORT_HIGH) });
-            expect(result).toBe('Thinking: high');
+            expect(result).toBe('Thinking: high *');
         });
 
         it('supports low effort from /effort command', () => {
             const result = render({ fileContent: makeTranscriptEntry(EFFORT_LOW) });
-            expect(result).toBe('Thinking: low');
+            expect(result).toBe('Thinking: low *');
         });
 
         it('supports medium effort from /effort command', () => {
             const result = render({ fileContent: makeTranscriptEntry(EFFORT_MEDIUM) });
-            expect(result).toBe('Thinking: medium');
+            expect(result).toBe('Thinking: medium *');
         });
 
         it('supports max effort from /effort command', () => {
             const result = render({ fileContent: makeTranscriptEntry(EFFORT_MAX) });
-            expect(result).toBe('Thinking: max');
+            expect(result).toBe('Thinking: max *');
         });
 
         it('returns raw effort from /effort command', () => {
             const result = render({ fileContent: makeTranscriptEntry(EFFORT_HIGH), rawValue: true });
-            expect(result).toBe('high');
+            expect(result).toBe('high *');
         });
 
         it('/effort overrides earlier /model when it is newer', () => {
@@ -266,7 +266,7 @@ describe('ThinkingEffortWidget', () => {
                     makeTranscriptEntry(EFFORT_MAX)
                 ].join('\n')
             });
-            expect(result).toBe('Thinking: max');
+            expect(result).toBe('Thinking: max *');
         });
 
         it('/model overrides earlier /effort when it is newer', () => {
@@ -276,7 +276,7 @@ describe('ThinkingEffortWidget', () => {
                     makeTranscriptEntry(MODEL_WITH_LOW_EFFORT)
                 ].join('\n')
             });
-            expect(result).toBe('Thinking: low');
+            expect(result).toBe('Thinking: low *');
         });
 
         it('/effort overrides settings fallback', () => {
@@ -284,7 +284,7 @@ describe('ThinkingEffortWidget', () => {
                 fileContent: makeTranscriptEntry(EFFORT_HIGH),
                 settingsValue: { effortLevel: 'low' }
             });
-            expect(result).toBe('Thinking: high');
+            expect(result).toBe('Thinking: high *');
         });
     });
 
@@ -294,7 +294,7 @@ describe('ThinkingEffortWidget', () => {
                 fileContent: makeTranscriptEntry(MODEL_WITHOUT_EFFORT),
                 settingsValue: { effortLevel: 'high' }
             });
-            expect(result).toBe('Thinking: high');
+            expect(result).toBe('Thinking: high *');
         });
 
         it('falls back to effortLevel when the transcript is unavailable', () => {
@@ -303,57 +303,57 @@ describe('ThinkingEffortWidget', () => {
                 fileContent: null,
                 settingsValue: { effortLevel: 'high' }
             });
-            expect(result).toBe('Thinking: high');
+            expect(result).toBe('Thinking: high *');
         });
 
         it('handles case-insensitive effortLevel', () => {
             const result = render({ settingsValue: { effortLevel: 'HIGH' } });
-            expect(result).toBe('Thinking: high');
+            expect(result).toBe('Thinking: high *');
         });
 
         it('supports max effortLevel', () => {
             const result = render({ settingsValue: { effortLevel: 'max' } });
-            expect(result).toBe('Thinking: max');
+            expect(result).toBe('Thinking: max *');
         });
 
         it('supports xhigh effortLevel', () => {
             const result = render({ settingsValue: { effortLevel: 'xhigh' } });
-            expect(result).toBe('Thinking: xhigh');
+            expect(result).toBe('Thinking: xhigh *');
         });
 
         it('supports mixed-case xHigh effortLevel', () => {
             const result = render({ settingsValue: { effortLevel: 'xHigh' } });
-            expect(result).toBe('Thinking: xhigh');
+            expect(result).toBe('Thinking: xhigh *');
         });
 
         it('shows unknown-but-valid effortLevel with trailing "?" marker', () => {
             const result = render({ settingsValue: { effortLevel: 'super-max' } });
-            expect(result).toBe('Thinking: super-max?');
+            expect(result).toBe('Thinking: super-max? *');
         });
 
         it('marks unknown effortLevel still passes through case-insensitive match', () => {
             const result = render({ settingsValue: { effortLevel: 'Ultra' } });
-            expect(result).toBe('Thinking: ultra?');
+            expect(result).toBe('Thinking: ultra? *');
         });
 
         it('displays default when effortLevel is not set', () => {
             const result = render();
-            expect(result).toBe('Thinking: default');
+            expect(result).toBeNull();
         });
 
         it('displays default when effortLevel fails the shape check', () => {
             const result = render({ settingsValue: { effortLevel: 'has space' } });
-            expect(result).toBe('Thinking: default');
+            expect(result).toBeNull();
         });
 
         it('displays default when effortLevel is too long', () => {
             const result = render({ settingsValue: { effortLevel: 'thisisaveryverylongeffortname' } });
-            expect(result).toBe('Thinking: default');
+            expect(result).toBeNull();
         });
 
         it('displays default when effortLevel is a single character', () => {
             const result = render({ settingsValue: { effortLevel: 'x' } });
-            expect(result).toBe('Thinking: default');
+            expect(result).toBeNull();
         });
 
         it('displays default when settings read fails', () => {
@@ -361,17 +361,17 @@ describe('ThinkingEffortWidget', () => {
                 throw new Error('settings unavailable');
             });
             const result = render();
-            expect(result).toBe('Thinking: default');
+            expect(result).toBeNull();
         });
 
         it('displays default when the latest /model output has no effort and settings are missing', () => {
             const result = render({ fileContent: makeTranscriptEntry(MODEL_WITHOUT_EFFORT) });
-            expect(result).toBe('Thinking: default');
+            expect(result).toBeNull();
         });
 
         it('displays raw default when fallback hits', () => {
             const result = render({ rawValue: true });
-            expect(result).toBe('default');
+            expect(result).toBeNull();
         });
     });
 });
