@@ -32,6 +32,21 @@ export class ModelWidget implements Widget {
         return null;
     }
 
+    getDynamicColor(item: WidgetItem, context: RenderContext): string | null {
+        const model = context.data?.model;
+        const modelId = (typeof model === 'string' ? model : (model?.id ?? model?.display_name ?? '')).toLowerCase();
+        if (modelId.includes('haiku')) {
+            return 'cyan';
+        }
+        if (modelId.includes('sonnet')) {
+            return 'green';
+        }
+        if (modelId.includes('opus')) {
+            return 'yellow';
+        }
+        return 'brightBlack';
+    }
+
     supportsRawValue(): boolean { return true; }
     supportsColors(item: WidgetItem): boolean { return true; }
 }

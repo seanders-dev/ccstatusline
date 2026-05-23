@@ -67,12 +67,12 @@ describe('GitChangesWidget', () => {
         expectGitExecOptions(mockExecFileSync.mock.calls[2]?.[2], '/tmp/worktree');
     });
 
-    it('should render zero counts when repo is clean', () => {
+    it('should render null when repo is clean', () => {
         mockExecFileSync.mockReturnValueOnce('true\n');
         mockExecFileSync.mockReturnValueOnce('');
         mockExecFileSync.mockReturnValueOnce('');
 
-        expect(render()).toBe('(+0,-0)');
+        expect(render()).toBeNull();
     });
 
     it('should render no git when probe returns false', () => {

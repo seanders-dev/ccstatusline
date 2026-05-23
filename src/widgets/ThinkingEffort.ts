@@ -71,6 +71,21 @@ export class ThinkingEffortWidget implements Widget {
         return item.rawValue ? effort : `Thinking: ${effort}`;
     }
 
+    getDynamicColor(item: WidgetItem, context: RenderContext): string | null {
+        const resolved = resolveThinkingEffort(context);
+        if (!resolved?.known) {
+            return 'brightBlack';
+        }
+        switch (resolved.value) {
+            case 'low': return 'green';
+            case 'medium': return 'yellow';
+            case 'high':
+            case 'xhigh':
+            case 'max': return 'red';
+            default: return 'brightBlack';
+        }
+    }
+
     supportsRawValue(): boolean { return true; }
     supportsColors(item: WidgetItem): boolean { return true; }
 }

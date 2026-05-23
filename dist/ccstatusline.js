@@ -53477,6 +53477,20 @@ class ModelWidget {
     }
     return null;
   }
+  getDynamicColor(item, context) {
+    const model = context.data?.model;
+    const modelId = (typeof model === "string" ? model : model?.id ?? model?.display_name ?? "").toLowerCase();
+    if (modelId.includes("haiku")) {
+      return "cyan";
+    }
+    if (modelId.includes("sonnet")) {
+      return "green";
+    }
+    if (modelId.includes("opus")) {
+      return "yellow";
+    }
+    return "brightBlack";
+  }
   supportsRawValue() {
     return true;
   }
@@ -54174,6 +54188,9 @@ class GitChangesWidget {
       return hideNoGit ? null : "(no git)";
     }
     const changes = getGitChangeCounts(context);
+    if (changes.insertions === 0 && changes.deletions === 0) {
+      return null;
+    }
     return `(+${changes.insertions},-${changes.deletions})`;
   }
   getCustomKeybinds() {
@@ -55424,6 +55441,19 @@ class GitAheadBehindWidget {
   }
   getCustomKeybinds() {
     return getHideNoGitKeybinds();
+  }
+  getDynamicColor(item, context) {
+    if (!isInsideGitWorkTree(context)) {
+      return null;
+    }
+    const result2 = getGitAheadBehind(context);
+    if (!result2) {
+      return null;
+    }
+    if (result2.behind > 0) {
+      return "yellow";
+    }
+    return null;
   }
   getNumericValue(context, _item) {
     if (!isInsideGitWorkTree(context))
@@ -67806,6 +67836,24 @@ May be incorrect when multiple Claude Code sessions are running due to current C
     }
     const effort = formatEffort(resolveThinkingEffort(context));
     return item.rawValue ? effort : `Thinking: ${effort}`;
+  }
+  getDynamicColor(item, context) {
+    const resolved = resolveThinkingEffort(context);
+    if (!resolved?.known) {
+      return "brightBlack";
+    }
+    switch (resolved.value) {
+      case "low":
+        return "green";
+      case "medium":
+        return "yellow";
+      case "high":
+      case "xhigh":
+      case "max":
+        return "red";
+      default:
+        return "brightBlack";
+    }
   }
   supportsRawValue() {
     return true;

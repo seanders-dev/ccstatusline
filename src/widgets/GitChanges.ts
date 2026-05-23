@@ -46,6 +46,9 @@ export class GitChangesWidget implements Widget {
         }
 
         const changes = getGitChangeCounts(context);
+        if (changes.insertions === 0 && changes.deletions === 0) {
+            return null;
+        }
         return `(+${changes.insertions},-${changes.deletions})`;
     }
 

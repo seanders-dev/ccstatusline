@@ -81,6 +81,20 @@ export class GitAheadBehindWidget implements Widget {
         return getHideNoGitKeybinds();
     }
 
+    getDynamicColor(item: WidgetItem, context: RenderContext): string | null {
+        if (!isInsideGitWorkTree(context)) {
+            return null;
+        }
+        const result = getGitAheadBehind(context);
+        if (!result) {
+            return null;
+        }
+        if (result.behind > 0) {
+            return 'yellow';
+        }
+        return null;
+    }
+
     getNumericValue(context: RenderContext, _item: WidgetItem): number | null {
         if (!isInsideGitWorkTree(context))
             return null;
