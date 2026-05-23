@@ -77,9 +77,9 @@ export class ThinkingEffortWidget implements Widget {
             return 'brightBlack';
         }
         switch (resolved.value) {
-            case 'low': return 'green';
-            case 'medium': return 'yellow';
-            case 'high':
+            case 'low':
+            case 'medium': return 'green';
+            case 'high': return 'yellow';
             case 'xhigh':
             case 'max': return 'red';
             default: return 'brightBlack';

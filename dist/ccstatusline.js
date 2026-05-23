@@ -67859,10 +67859,10 @@ May be incorrect when multiple Claude Code sessions are running due to current C
     }
     switch (resolved.value) {
       case "low":
-        return "green";
       case "medium":
-        return "yellow";
+        return "green";
       case "high":
+        return "yellow";
       case "xhigh":
       case "max":
         return "red";
