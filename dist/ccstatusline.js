@@ -52996,6 +52996,7 @@ var init_Widget = __esm(() => {
     timeout: exports_external.number().optional(),
     merge: exports_external.union([exports_external.boolean(), exports_external.literal("no-padding")]).optional(),
     hide: exports_external.boolean().optional(),
+    dynamicColor: exports_external.boolean().optional(),
     metadata: exports_external.record(exports_external.string(), exports_external.string()).optional()
   });
 });
@@ -57164,7 +57165,7 @@ function renderPowerlineStatusLine(widgets, settings, context, lineIndex = 0, gl
       const leadingPadding = omitLeadingPadding ? "" : padding;
       const trailingPadding = omitTrailingPadding ? "" : padding;
       const paddedText = `${leadingPadding}${widgetText}${trailingPadding}`;
-      const dynamicColor = widgetImpl?.getDynamicColor?.(widget, context) ?? null;
+      const dynamicColor = widget.dynamicColor === true ? widgetImpl?.getDynamicColor?.(widget, context) ?? null : null;
       let fgColor = dynamicColor ?? widget.color ?? defaultColor;
       let bgColor = widget.backgroundColor;
       const skipFgTheme = widget.type === "custom-command" && widget.preserveColors;
@@ -57520,7 +57521,7 @@ function renderStatusLine(widgets, settings, context, preRenderedWidgets, preCal
           }
           elements.push({ content: finalOutput, type: widget.type, widget });
         } else {
-          const dynamicColor = widgetImpl?.getDynamicColor?.(widget, context) ?? null;
+          const dynamicColor = widget.dynamicColor === true ? widgetImpl?.getDynamicColor?.(widget, context) ?? null : null;
           const effectiveColor = dynamicColor ?? widget.color ?? defaultColor;
           elements.push({
             content: applyColorsWithOverride(widgetText, effectiveColor, widget.backgroundColor, widget.bold),
@@ -71582,12 +71583,19 @@ function toggleWidgetBold(widgets, widgetId) {
     bold: !widget.bold
   }));
 }
+function toggleWidgetDynamicColor(widgets, widgetId) {
+  return updateWidgetById(widgets, widgetId, (widget) => ({
+    ...widget,
+    dynamicColor: !widget.dynamicColor
+  }));
+}
 function resetWidgetStyling(widgets, widgetId) {
   return updateWidgetById(widgets, widgetId, (widget) => {
     const {
       color,
       backgroundColor,
       bold,
+      dynamicColor,
       ...restWidget
     } = widget;
     return restWidget;
@@ -71599,6 +71607,7 @@ function clearAllWidgetStyling(widgets) {
       color,
       backgroundColor,
       bold,
+      dynamicColor,
       ...restWidget
     } = widget;
     return restWidget;
@@ -71784,6 +71793,17 @@ var ColorMenu = ({ widgets, lineIndex, settings, onUpdate, onBack }) => {
         if (selectedWidget2) {
           const newItems = toggleWidgetBold(widgets, selectedWidget2.id);
           onUpdate(newItems);
+        }
+      }
+    } else if (input === "d" || input === "D") {
+      if (highlightedItemId && highlightedItemId !== "back") {
+        const selectedWidget2 = colorableWidgets.find((widget) => widget.id === highlightedItemId);
+        if (selectedWidget2) {
+          const widgetImpl = getWidget(selectedWidget2.type);
+          if (widgetImpl?.getDynamicColor) {
+            const newItems = toggleWidgetDynamicColor(widgets, selectedWidget2.id);
+            onUpdate(newItems);
+          }
         }
       }
     } else if (input === "r" || input === "R") {
@@ -72055,7 +72075,7 @@ var ColorMenu = ({ widgets, lineIndex, settings, onUpdate, onBack }) => {
               "↑↓ to select, ←→ to cycle",
               " ",
               editingBackground ? "background" : "foreground",
-              ", (f) to toggle bg/fg, (b)old,",
+              ", (f) to toggle bg/fg, (b)old, (d)ynamic,",
               settings.colorLevel === 3 ? " (h)ex," : settings.colorLevel === 2 ? " (a)nsi256," : "",
               " ",
               "(r)eset, (c)lear all, ESC to go back"
@@ -72081,7 +72101,14 @@ var ColorMenu = ({ widgets, lineIndex, settings, onUpdate, onBack }) => {
                 "):",
                 " ",
                 colorDisplay,
-                selectedWidget.bold && source_default.bold(" [BOLD]")
+                selectedWidget.bold && source_default.bold(" [BOLD]"),
+                (() => {
+                  const widgetImpl = getWidget(selectedWidget.type);
+                  if (!widgetImpl?.getDynamicColor) {
+                    return null;
+                  }
+                  return selectedWidget.dynamicColor ? source_default.green(" [DYNAMIC]") : source_default.gray(" [DYNAMIC: off]");
+                })()
               ]
             }, undefined, true, undefined, this)
           }, undefined, false, undefined, this) : /* @__PURE__ */ jsx_dev_runtime12.jsxDEV(Box_default, {

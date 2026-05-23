@@ -37,17 +37,26 @@ export function toggleWidgetBold(widgets: WidgetItem[], widgetId: string): Widge
     }));
 }
 
+export function toggleWidgetDynamicColor(widgets: WidgetItem[], widgetId: string): WidgetItem[] {
+    return updateWidgetById(widgets, widgetId, widget => ({
+        ...widget,
+        dynamicColor: !widget.dynamicColor
+    }));
+}
+
 export function resetWidgetStyling(widgets: WidgetItem[], widgetId: string): WidgetItem[] {
     return updateWidgetById(widgets, widgetId, (widget) => {
         const {
             color,
             backgroundColor,
             bold,
+            dynamicColor,
             ...restWidget
         } = widget;
         void color; // Intentionally unused
         void backgroundColor; // Intentionally unused
         void bold; // Intentionally unused
+        void dynamicColor; // Intentionally unused
         return restWidget;
     });
 }
@@ -58,11 +67,13 @@ export function clearAllWidgetStyling(widgets: WidgetItem[]): WidgetItem[] {
             color,
             backgroundColor,
             bold,
+            dynamicColor,
             ...restWidget
         } = widget;
         void color; // Intentionally unused
         void backgroundColor; // Intentionally unused
         void bold; // Intentionally unused
+        void dynamicColor; // Intentionally unused
         return restWidget;
     });
 }

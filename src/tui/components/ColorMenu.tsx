@@ -24,7 +24,8 @@ import {
     cycleWidgetColor,
     resetWidgetStyling,
     setWidgetColor,
-    toggleWidgetBold
+    toggleWidgetBold,
+    toggleWidgetDynamicColor
 } from './color-menu/mutations';
 
 export interface ColorMenuProps {
@@ -188,6 +189,17 @@ export const ColorMenu: React.FC<ColorMenuProps> = ({ widgets, lineIndex, settin
                 if (selectedWidget) {
                     const newItems = toggleWidgetBold(widgets, selectedWidget.id);
                     onUpdate(newItems);
+                }
+            }
+        } else if (input === 'd' || input === 'D') {
+            if (highlightedItemId && highlightedItemId !== 'back') {
+                const selectedWidget = colorableWidgets.find(widget => widget.id === highlightedItemId);
+                if (selectedWidget) {
+                    const widgetImpl = getWidget(selectedWidget.type);
+                    if (widgetImpl?.getDynamicColor) {
+                        const newItems = toggleWidgetDynamicColor(widgets, selectedWidget.id);
+                        onUpdate(newItems);
+                    }
                 }
             }
         } else if (input === 'r' || input === 'R') {
@@ -431,7 +443,7 @@ export const ColorMenu: React.FC<ColorMenuProps> = ({ widgets, lineIndex, settin
                         ↑↓ to select, ←→ to cycle
                         {' '}
                         {editingBackground ? 'background' : 'foreground'}
-                        , (f) to toggle bg/fg, (b)old,
+                        , (f) to toggle bg/fg, (b)old, (d)ynamic,
                         {settings.colorLevel === 3 ? ' (h)ex,' : settings.colorLevel === 2 ? ' (a)nsi256,' : ''}
                         {' '}
                         (r)eset, (c)lear all, ESC to go back
@@ -455,6 +467,15 @@ export const ColorMenu: React.FC<ColorMenuProps> = ({ widgets, lineIndex, settin
                                 {' '}
                                 {colorDisplay}
                                 {selectedWidget.bold && chalk.bold(' [BOLD]')}
+                                {(() => {
+                                    const widgetImpl = getWidget(selectedWidget.type);
+                                    if (!widgetImpl?.getDynamicColor) {
+                                        return null;
+                                    }
+                                    return selectedWidget.dynamicColor
+                                        ? chalk.green(' [DYNAMIC]')
+                                        : chalk.gray(' [DYNAMIC: off]');
+                                })()}
                             </Text>
                         </Box>
                     ) : (
